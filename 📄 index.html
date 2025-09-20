@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>แบบทดสอบภาษาไทย ม.4 — Pink & Cute + Animations</title>
+  <!-- ฟอนต์น่ารัก ๆ -->
+  <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;700&family=Prompt:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== THEME: ขาวชมพู น่ารัก ===== */
+    :root{
+      --bg:#fff7fb; --bg2:#ffffff; --fg:#4b4453; --muted:#8c8396;
+      --accent:#ff7fb7; --accent2:#ffd2e7; --good:#7edfb0; --bad:#ff9bb0;
+      --border:#f3cde0; --radius:20px; --shadow:0 12px 40px rgba(255,126,183,.15),0 2px 8px rgba(0,0,0,.04);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:"Prompt","Noto Sans Thai",system-ui,ui-sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--fg);overflow-x:hidden}
+
+    /* ===== หัวใจลอย ===== */
+    .float-heart{position:fixed;inset:0;pointer-events:none;z-index:0}
+    .float-heart span{position:absolute;left:var(--x);bottom:-40px;width:18px;height:18px;transform:translateX(-50%);
+      background:radial-gradient(circle at 30% 30%, #fff 0 35%, transparent 36%),
+                 radial-gradient(circle at 70% 30%, #fff 0 35%, transparent 36%),
+                 linear-gradient(45deg, var(--accent) 0 50%, transparent 0),
+                 linear-gradient(-45deg, var(--accent) 0 50%, transparent 0);
+      background-size:50% 50%,50% 50%,100% 100%,100% 100%; background-repeat:no-repeat; background-position:0 0,100% 0,0 0,0 0;
+      filter:drop-shadow(0 4px 8px rgba(255,127,183,.25)); opacity:.55; animation:floatUp calc(6s + var(--d)*1s) linear infinite}
+    @keyframes floatUp{0%{transform:translate(-50%,0) scale(.7)} 90%{opacity:.75} 100%{transform:translate(-50%,-120vh) scale(1.1);opacity:0}}
+
+    /* ===== การ์ด + หน้าต่าง ๆ ===== */
+    .page{min-height:100dvh;display:grid;place-items:center;padding:20px;position:relative;z-index:1;opacity:0;transform:translateY(12px);animation:fadeUp .6s ease forwards}
+    @keyframes fadeUp{to{opacity:1;transform:none}}
+    .hidden{display:none}
+    .card{width:min(900px,95vw);background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:22px 18px;box-shadow:var(--shadow)}
+    .title{font-family:"Mali", cursive;text-align:center;color:#ff4fa4;font-weight:900;font-size:clamp(26px,5vw,44px);margin:6px 0 12px;animation:spark 2.8s ease-in-out infinite}
+    @keyframes spark{50%{filter:drop-shadow(0 0 12px rgba(255,79,164,.35))}}
+
+    .btn{border:none;background:linear-gradient(180deg,#ff7fb7,#ff5ea6);color:#fff;padding:10px 18px;border-radius:16px;cursor:pointer;font-weight:800}
+    .btn.alt{background:#ffd2e7;color:#4b4453}
+    .input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:14px;font-size:16px}
+    .quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .progress{height:10px;background:#fff;border:2px solid var(--border);border-radius:999px;margin:10px 0}
+    .progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff9dcb,#ffd3e8);transition:width .35s cubic-bezier(.2,.9,.2,1)}
+    .q{background:#fff6fb;border:2px solid #ffe1ef;border-radius:14px;padding:14px;margin:12px 0}
+    .opt{display:block;margin:6px 0;cursor:pointer}
+    .correct{background:#d9ffe9;border-color:#7edfb0}
+    .incorrect{background:#ffe4ec;border-color:#ff9bb0}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:700;color:#fff;background:var(--good)}
+    .badge.bad{background:var(--bad)}
+    .result-img{max-width:260px;margin:10px auto;display:block}
+    .note{margin:6px 0 12px;color:#7a6e82}
+
+    /* ===== เปลี่ยนหน้าแบบม่าน ===== */
+    .curtain{position:fixed;inset:0;background:linear-gradient(180deg,#ffeaf5,#fff);transform:translateY(100%);z-index:3}
+    .curtain.show{animation:curt .55s cubic-bezier(.2,.9,.2,1) forwards}
+    @keyframes curt{0%{transform:translateY(100%)}100%{transform:translateY(-100%)}}
+
+    /* ===== Modal ใบ้ (น่ารัก ๆ) ===== */
+    .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(255,182,207,.25);backdrop-filter:blur(3px);z-index:5}
+    .modal.show{display:grid;animation:fadeUp .25s ease forwards}
+    .modal-card{width:min(520px,90vw);background:#fff;border:2px solid #ffc9e2;border-radius:20px;box-shadow:var(--shadow);padding:18px}
+    .modal-title{font-family:"Mali", cursive;margin:0 0 8px;color:#ff4fa4}
+    .modal-hint{font-size:18px;line-height:1.6;background:#fff6fb;border:2px dashed #ffd9ea;border-radius:14px;padding:12px}
+    .modal-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    .chip{background:#ffe3f1;color:#7a5a69;border-radius:999px;padding:6px 10px;font-weight:700}
+  </style>
+</head>
+<body>
+  <!-- หัวใจลอย -->
+  <div class="float-heart" aria-hidden="true">
+    <span style="--x:8%;--d:0"></span><span style="--x:16%;--d:1"></span><span style="--x:24%;--d:2"></span><span style="--x:32%;--d:3"></span><span style="--x:40%;--d:4"></span>
+    <span style="--x:48%;--d:2"></span><span style="--x:56%;--d:1"></span><span style="--x:64%;--d:0"></span><span style="--x:72%;--d:3"></span><span style="--x:80%;--d:4"></span><span style="--x:88%;--d:1"></span><span style="--x:94%;--d:2"></span>
+  </div>
+  <div id="curtain" class="curtain"></div>
+
+  <!-- Modal ใบ้คำถาม -->
+  <div id="hintModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="hintTitle">
+    <div class="modal-card">
+      <h3 id="hintTitle" class="modal-title">🎀 คำใบ้แสนน่ารัก</h3>
+      <div id="hintText" class="modal-hint">…</div>
+      <div class="modal-actions">
+        <span class="chip">เหลือใบ้: <b id="hintRemainChip">5</b> ครั้ง</span>
+        <div style="display:flex; gap:8px">
+          <button class="btn alt" id="btnCloseHint">ปิด</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: WELCOME -->
+  <section id="page-welcome" class="page">
+    <div class="card">
+      <h1 class="title">แบบทดสอบภาษาไทย ม.4</h1>
+      <p>ใส่ชื่อก่อนเริ่ม</p>
+      <input id="studentName" class="input" placeholder="ชื่อของคุณ" />
+      <div style="margin-top:12px;display:flex;gap:10px;justify-content:center">
+        <button class="btn" id="btnStart">เริ่มทำแบบทดสอบ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE: QUIZ -->
+  <section id="page-quiz" class="page hidden">
+    <div class="card">
+      <div class="quiz-header">
+        <span id="tagName"></span>
+        <span>ข้อ <b id="idxDisp">1</b>/<span id="totalDisp">1</span></span>
+      </div>
+      <div class="progress"><span id="bar"></span></div>
+      <div id="questionWrap"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:12px;gap:8px">
+        <button class="btn alt" id="btnPrev">ย้อน</button>
+        <button class="btn alt" id="btnHint">ใบ้ (เหลือ <span id="hintRemain">5</span>)</button>
+        <button class="btn" id="btnNext">ถัดไป</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE: RESULT -->
+  <section id="page-result" class="page hidden">
+    <div class="card">
+      <h2 class="title">ผลการทดสอบ</h2>
+      <p id="scoreText"></p>
+      <div id="resultNote" class="note"></div>
+      <!-- เกณฑ์รูป: ≥80% ดีใจสุด • ≥50% ดีใจ • <50% ร้องไห้ -->
+      <img id="resultImg" class="result-img" alt="รูปผลลัพธ์" />
+      <div id="review"></div>
+      <button class="btn alt" id="btnRetry">ลองใหม่</button>
+    </div>
+  </section>
+
+  <script>
+    // ========= จุดเดียวที่ต้องแก้เพื่อใช้รูปของจิ =========
+    // วางไฟล์รูปไว้ในโฟลเดอร์เดียวกับ index.html หรือโฟลเดอร์ย่อย แล้วแก้ path ตรงนี้
+    const IMG_PATHS = {
+      veryHappy: 'img/fox_very_happy.png', // ≥80%
+      happy:     'img/fox_happy.png',      // 50–79%
+      sad:       'img/fox_sad.png'         // <50%
+    };
+
+    // ถ้ารูปหาย ให้ใช้ placeholder SVG อัตโนมัติ
+    const PLACEHOLDER = 'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="512" height="350" viewBox="0 0 512 350"><rect width="100%" height="100%" fill="#ffeaf5"/><text x="50%" y="50%" text-anchor="middle" font-family="Mali, sans-serif" font-size="22" fill="#ff4fa4">ตอนนี้เบต้าอยู่เดะค่อยใส่รูปคนสร้างไปชักว่าวเลยไม่ได้ทำ</text></svg>');
+
+    // ========= คำถาม 40 ข้อ =========
+    const QUESTIONS = [
+      {q:"การแบ่งวรรคตอนในการพูดมีความสำคัญอย่างไร",opts:["เพื่อหยุดพัก","เพื่อความไพเราะ","เพื่อให้ผู้ฟังเข้าใจความหมาย","ทั้งหมดถูก"],ans:3,hint:"หยุดเป็นจังหวะช่วยให้เข้าใจความหมาย"},
+      {q:"สระในภาษาไทยออกเสียงมีรูปกี่กลุ่มใหญ่",opts:["สระเดี่ยว/สระประสม","สระยาว/สระสั้น","สระหน้า/สระหลัง","สระหนัก/สระเบา"],ans:0,hint:"เดี่ยว vs ประสม"},
+      {q:"โคลงสี่สุภาพ",opts:["เป็นคำประพันธ์ 4 บาท","บังคับสัมผัสสำคัญ","มีจำนวนพยางค์บังคับ","ถูกทุกข้อ"],ans:3,hint:"ทั้งโครงสร้าง+สัมผัส+พยางค์"},
+      {q:"องค์ประกอบใดของเสียงควบคุมอารมณ์และจังหวะในการอ่าน",opts:["วรรณยุกต์","ระดับเสียง/น้ำเสียง","จำนวนพยางค์","รูปคำ"],ans:1,hint:"โทนเสียงทำให้ฟังเพลิน"},
+      {q:"การปรับน้ำเสียงให้อ่อนโยนช่วยให้การสื่อสารบรรลุประสิทธิภาพสูงสุดเพราะ",opts:["ทำให้คนหลับ","ทำให้เข้าใจง่ายและน่าฟัง","ทำให้เสียงดังขึ้น","ไม่มีผล"],ans:1,hint:"มารยาททางวาจา"},
+      {q:"ข้อใดคือขั้นตอนของการเขียนสรุป",opts:["อ่าน–จับใจความ–เรียบเรียง","คิดหัวข้อ–คัดลอกทั้งย่อหน้า","เขียนก่อนอ่าน","ตัดคำยากทิ้ง"],ans:0,hint:"อ่านก่อนสรุป"},
+      {q:"ข้อใดกล่าวถึงการใช้ภาษาในการเขียนเชิงสารคดีอย่างถูกต้อง",opts:["ยกอ้างมากเกินไป","เน้นข้อเท็จจริง ลำดับชัดเจน","ใช้คำกำกวม","เว้นวรรคตามใจ"],ans:1,hint:"ข้อเท็จจริง"},
+      {q:"คำว่ากว้างของคำว่า ภาษา ในเชิงภาษาศาสตร์หมายถึง",opts:["ภาษามือเท่านั้น","ระบบสัญญาณสื่อสาร","คำราชาศัพท์","สำเนียง"],ans:1,hint:"สื่อสารด้วยสัญญาณ/เสียง/สัญลักษณ์"},
+      {q:"เหตุการณ์ในนิทานมักสื่อสารด้วยองค์ประกอบใดบ้าง",opts:["ตัวละคร–เหตุการณ์–ฉาก","สูตรคูณ","คำราชาศัพท์","คำภาษาต่างประเทศ"],ans:0,hint:"โครงเรื่องพื้นฐาน"},
+      {q:"มารยาทในการฟังที่ดีคือ",opts:["พูดแทรก","ฟังจนจบและถามอย่างสุภาพ","ไม่สบตา","เล่นมือถือ"],ans:1,hint:"ฟัง–คิด–ถาม"},
+      {q:"สำนวนใดหมายถึงทำงานรวดเร็ว",opts:["ช้าเป็นเต่า","ไวปานจรวด","น้ำขึ้นให้รีบตัก","ใจลอย"],ans:1,hint:"เร็วมาก"},
+      {q:"ประโยคใดใช้คำราชาศัพท์",opts:["พระองค์เสด็จ","ฉันไปตลาด","เขากินข้าว","เราเดินเล่น"],ans:0,hint:"ใช้กับพระมหากษัตริย์"},
+      {q:"ข้อใดเป็นประโยคบอกเล่า",opts:["อย่าทำเสียงดัง","ทำไมเธอมา","วันนี้อากาศดี","ช่วยปิดประตู"],ans:2,hint:"เล่าข้อเท็จจริง"},
+      {q:"เสียงสระใดเป็นสระประสม",opts:["อา","เอีย","อิ","อุ"],ans:1,hint:"สระหลายส่วนประกอบ"},
+      {q:"คำว่า ‘การศึกษา’ จัดเป็นคำชนิดใด",opts:["คำนาม","คำกริยา","คำวิเศษณ์","คำสันธาน"],ans:0,hint:"ชื่อสิ่ง"},
+      {q:"เสียงพยัญชนะในชื่อ ‘โคลง’ เป็นเสียงกล้ำประเภทใด",opts:["ควบแท้","ควบไม่แท้","ควบอักษรสามตัว","ไม่ใช่ควบกล้ำ"],ans:0,hint:"คล- เป็นควบแท้"},
+      {q:"คำใดเป็นคำสมาส",opts:["ประชาธิปไตย","พรุ่งนี้","อย่างไร","กำลังใจ"],ans:0,hint:"บาลี–สันสกฤตประกอบ"},
+      {q:"คำใดเป็นคำสนธิ",opts:["มหาราช","ราชการ","มหภาค","ภาษาไทย"],ans:0,hint:"กลืนเสียงเมื่อสนธิ"},
+      {q:"คำใดเป็นคำประสม",opts:["น้ำใจ","ใจดี","รักใคร่","กินอยู่"],ans:0,hint:"รวมคำสองคำเกิดความหมายใหม่"},
+      {q:"ข้อใดไม่ใช่อักษรสูง",opts:["ฉ","ถ","ส","ช"],ans:3,hint:"ช เป็นอักษรกลาง"},
+      {q:"วรรณยุกต์ภาษาไทยมีกี่เสียง",opts:["3","4","5","6"],ans:2,hint:"สามัญ เอก โท ตรี จัตวา"},
+      {q:"คำต่อไปนี้ข้อใดเป็นเสียงยาว",opts:["อะ","อา","อิ","อุ"],ans:1,hint:"เทียบกับสั้นคือ ‘อะ’"},
+      {q:"เครื่องหมาย ‘ๆ’ เรียกว่าอะไร",opts:["ไปยาลใหญ่","ไม้ยมก","ไม้ทัณฑฆาต","วิสรรชนีย์"],ans:1,hint:"ใช้ซ้ำคำ"},
+      {q:"คำว่า ‘เสวย’ ใช้ในสถานการณ์ใด",opts:["พูดกับเพื่อน","ใช้กับพระมหากษัตริย์","ใช้กับครู","ใช้กับเด็ก"],ans:1,hint:"ราชาศัพท์"},
+      {q:"ข้อใดคือประโยคความซ้อน",opts:["ฉันกินข้าว","ฉันกินข้าวแล้วไปเรียน","เมื่อฝนตกฉันจึงไม่ออกไป","ไปตลาดและซื้อผลไม้"],ans:2,hint:"มีอนุประโยค"},
+      {q:"ส่วนประกอบของคำประพันธ์ที่เน้นสัมผัสเรียกว่า",opts:["ฉันทลักษณ์","คำนำ","บทสรุป","คำสร้อย"],ans:0,hint:"กฎบังคับของคำประพันธ์"},
+      {q:"ข้อใดคือการใช้ภาษาเชิงโน้มน้าว",opts:["เล่าข่าว","ยกเหตุผลสนับสนุนข้อเสนอ","บรรยายทิวทัศน์","อธิบายวิธีใช้"],ans:1,hint:"ชักจูงใจ"},
+      {q:"คำทับศัพท์คือ",opts:["คำประดิษฐ์ใหม่","คำที่ยืมมาและปรับรูปให้ตรงเสียง","คำที่แปลตรงตัว","คำสแลง"],ans:1,hint:"เขียนตามเสียงเดิม"},
+      {q:"คำว่า ‘แม้ว่า’ เป็นคำชนิดใด",opts:["สันธาน","กริยา","นาม","วิเศษณ์"],ans:0,hint:"เชื่อมประโยค"},
+      {q:"คำภาษาบาลี–สันสกฤตมักพบในบริบทใด",opts:["การสนทนาทั่วไป","ภาษาทางการ/วิชาการ","ภาษาเด็ก","สแลง"],ans:1,hint:"ทางการ"},
+      {q:"ข้อใดเป็นลักษณะของภาษาเขียนที่ดี",opts:["กำกวม","กระชับ ชัดเจน","ฟุ่มเฟือย","ผิดหลักไวยากรณ์"],ans:1,hint:"ชัดและถูกหลัก"},
+      {q:"คำใดเป็นคำบุพบท",opts:["และ","ที่","ของ","หรือ"],ans:2,hint:"แสดงความเป็นเจ้าของ"},
+      {q:"การอ่านจับใจความทำอย่างไร",opts:["อ่านผ่าน ๆ","หาคำยากเท่านั้น","ระบุประเด็นสำคัญและรายละเอียดสนับสนุน","อ่านเฉพาะบทสรุป"],ans:2,hint:"ใจความหลัก+รอง"},
+      {q:"คำว่า ‘เขียน’ จัดเป็นคำชนิดใด",opts:["นาม","กริยา","วิเศษณ์","สันธาน"],ans:1,hint:"การกระทำ"},
+      {q:"คำใดเป็นสำนวน",opts:["กินใจ","กินข้าว","กินนม","กินน้ำ"],ans:0,hint:"ความหมายเปรียบ"},
+      {q:"ข้อใดเป็นคำซ้อน",opts:["งดงาม","สวย","งาม","งามตา"],ans:0,hint:"ซ้ำเสียงใกล้กัน"},
+      {q:"คำใดแสดงกาลเวลา",opts:["แล้ว","เพราะ","หรือ","และ"],ans:0,hint:"กริยาช่วยเวลา"},
+      {q:"โวหารใดเน้นบรรยายความรู้สึกและภาพ",opts:["พรรณนาโวหาร","อธิบายโวหาร","เทศนาโวหาร","เถียงโวหาร"],ans:0,hint:"บรรยายให้เห็นภาพ"},
+      {q:"คำต่อไปนี้ข้อใดเป็นอักษรต่ำ",opts:["ง","ฉ","ด","ต"],ans:0,hint:"ง น ม ย ร ล ว เป็นต่ำ"},
+      {q:"การใช้คำควบกล้ำผิด เช่น *ครัว* แทน *ควร* เป็นปัญหาใด",opts:["อักขรวิธี","สัทวิทยา","คำสัมพันธ์","ฉันทลักษณ์"],ans:0,hint:"การเขียนสะกด"}
+    ];
+
+    // ========= STATE =========
+    let idx=0, selected=new Array(QUESTIONS.length).fill(null), hints=5;
+    const els={
+      welcome:document.getElementById('page-welcome'),
+      quiz:document.getElementById('page-quiz'),
+      result:document.getElementById('page-result'),
+      name:document.getElementById('studentName'),
+      tagName:document.getElementById('tagName'),
+      idxDisp:document.getElementById('idxDisp'),
+      totalDisp:document.getElementById('totalDisp'),
+      bar:document.getElementById('bar'),
+      qwrap:document.getElementById('questionWrap'),
+      review:document.getElementById('review'),
+      scoreText:document.getElementById('scoreText'),
+      resultImg:document.getElementById('resultImg'),
+      resultNote:document.getElementById('resultNote'),
+      hintRemain:document.getElementById('hintRemain'),
+      hintRemainChip:document.getElementById('hintRemainChip'),
+      curtain:document.getElementById('curtain'),
+      hintModal:document.getElementById('hintModal'),
+      hintText:document.getElementById('hintText'),
+      btnCloseHint:document.getElementById('btnCloseHint')
+    };
+    els.totalDisp.textContent=QUESTIONS.length;
+
+    // ========= NAV =========
+    function go(to){
+      els.curtain.classList.add('show');
+      setTimeout(()=>{
+        els.welcome.classList.add('hidden');
+        els.quiz.classList.add('hidden');
+        els.result.classList.add('hidden');
+        if(to==='welcome') els.welcome.classList.remove('hidden');
+        if(to==='quiz') els.quiz.classList.remove('hidden');
+        if(to==='result') els.result.classList.remove('hidden');
+        els.curtain.classList.remove('show');
+      },300);
+    }
+
+    // ========= เรนเดอร์คำถาม =========
+    function render(){
+      const item=QUESTIONS[idx];
+      els.idxDisp.textContent=idx+1;
+      els.bar.style.width=(idx/(QUESTIONS.length-1))*100+'%';
+      els.qwrap.innerHTML='';
+      const qbox=document.createElement('div'); qbox.className='q'; qbox.innerHTML=`<h3>${item.q}</h3>`;
+      item.opts.forEach((op,i)=>{
+        const div=document.createElement('label'); div.className='opt';
+        div.innerHTML=`<input type="radio" name="q${idx}" value="${i}" ${selected[idx]===i?'checked':''}> ${op}`;
+        div.addEventListener('click',()=>{selected[idx]=i;});
+        qbox.appendChild(div);
+      });
+      els.qwrap.appendChild(qbox);
+    }
+
+    // ========= ส่งคำตอบ =========
+    function submit(){
+      let correct=0; els.review.innerHTML='';
+      QUESTIONS.forEach((it,i)=>{
+        const ok=selected[i]===it.ans; if(ok) correct++;
+        const box=document.createElement('div'); box.className='q '+(ok?'correct':'incorrect');
+        const ua=selected[i]!=null?it.opts[selected[i]]:'ไม่ได้ตอบ';
+        box.innerHTML=`<h3>ข้อ ${i+1}: ${it.q}</h3><div>คำตอบคุณ: <span class="badge ${ok?'':'bad'}">${ua}</span></div><div>เฉลย: <span class="badge">${it.opts[it.ans]}</span></div>`;
+        els.review.appendChild(box);
+      });
+      const percent=Math.round((correct/QUESTIONS.length)*100);
+      els.scoreText.innerHTML=`คุณได้ ${correct}/${QUESTIONS.length} (${percent}%)`;
+      // เลือกรูปจากไฟล์ของผู้ใช้
+      els.resultImg.onerror=()=>{els.resultImg.src=PLACEHOLDER};
+      if(percent>=80){ els.resultImg.src=IMG_PATHS.veryHappy; els.resultNote.innerHTML='<b>ยินดีด้วย!</b> ทำได้ ≥80% 🎉 ครูภูมิใจในตัวเธอ'; }
+      else if(percent>=50){ els.resultImg.src=IMG_PATHS.happy; els.resultNote.textContent='ผ่านครึ่งแล้ว ✨ รอบหน้าขอให้ได้เต็ม'; }
+      else{ els.resultImg.src=IMG_PATHS.sad; els.resultNote.textContent='ยังไม่ผ่านนะ 😢 อ่านหนังสือไหม่'; }
+      go('result');
+    }
+
+    // ========= Modal Hint =========
+    function openHint(){
+      if(hints<=0){ alert('ใช้สิทธิ์ใบ้ครบแล้ว (5 ครั้ง)'); return; }
+      els.hintText.textContent = QUESTIONS[idx].hint;
+      els.hintModal.classList.add('show');
+      // หักสิทธิ์เมื่อเปิด
+      hints--; els.hintRemain.textContent=hints; els.hintRemainChip.textContent=hints;
+    }
+    function closeHint(){ els.hintModal.classList.remove('show'); }
+
+    // ========= อีเวนต์ =========
+    document.getElementById('btnStart').addEventListener('click',()=>{
+      const n=els.name.value.trim(); if(!n){els.name.focus();return;}
+      els.tagName.textContent=n; go('quiz'); render();
+    });
+    document.getElementById('btnNext').addEventListener('click',()=>{ if(idx<QUESTIONS.length-1){idx++;render();} else submit(); });
+    document.getElementById('btnPrev').addEventListener('click',()=>{ if(idx>0){idx--;render();} });
+    document.getElementById('btnRetry').addEventListener('click',()=>{ location.reload(); });
+
+    // ใบ้คำถาม → เปิด modal
+    document.getElementById('btnHint').addEventListener('click',openHint);
+    els.btnCloseHint.addEventListener('click',closeHint);
+    els.hintModal.addEventListener('click',(e)=>{ if(e.target===els.hintModal) closeHint(); });
+    window.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeHint(); if(e.key.toLowerCase()==='h') openHint(); });
+
+    // เปิดฉากด้วยม่านนุ่ม ๆ
+    window.addEventListener('load',()=>{ const c=document.getElementById('curtain'); c.classList.add('show'); setTimeout(()=>c.classList.remove('show'),520); });
+  </script>
+</body>
+</html>
